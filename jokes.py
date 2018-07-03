@@ -1,8 +1,6 @@
 import requests
+import config
 
-url = "http://api.icndb.com/jokes/random/"
-max_jokes = 10
-max_requests = 20
 jokes = []
 
 
@@ -12,7 +10,7 @@ def get_jokes():
 
 def fill_new_jokes():
     global jokes
-    new_jokes = _fetch_jokes(max_jokes)
+    new_jokes = _fetch_jokes(config.max_jokes)
     jokes = new_jokes
 
 
@@ -27,10 +25,10 @@ def _fetch_jokes(num):
 
     while len(new_jokes) < num:
         tries += 1
-        if tries > max_requests:
+        if tries > config.max_requests:
             break
 
-        res = requests.get(url)
+        res = requests.get(config.api_url)
         if res.status_code != 200:
             continue
 
