@@ -10,11 +10,10 @@ def get_jokes():
     return jokes
 
 
-def fill_jokes():
+def fill_new_jokes():
     global jokes
-    diff = max_jokes - len(jokes)
-    new_jokes = _fetch_jokes(diff)
-    jokes.extend(new_jokes)
+    new_jokes = _fetch_jokes(max_jokes)
+    jokes = new_jokes
 
 
 def flush_jokes():

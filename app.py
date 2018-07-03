@@ -1,5 +1,5 @@
 from flask import Flask, Response
-from jokes import get_jokes, fill_jokes, flush_jokes
+from jokes import get_jokes, fill_new_jokes, flush_jokes
 import json
 
 app = Flask(__name__)
@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 @app.before_first_request
 def startup():
-    fill_jokes()
+    fill_new_jokes()
 
 
 @app.route('/')
@@ -28,7 +28,7 @@ def jokes_get():
 
 @app.route('/getNewJokes')
 def jokes_get_new():
-    fill_jokes()
+    fill_new_jokes()
     data = get_jokes()
 
     res = {
