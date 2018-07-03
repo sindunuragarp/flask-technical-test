@@ -1,5 +1,6 @@
 import requests
 import config
+from json.decoder import JSONDecodeError
 
 jokes = []
 
@@ -10,8 +11,14 @@ def get_jokes():
 
 def fill_new_jokes():
     global jokes
-    new_jokes = _fetch_jokes(config.max_jokes)
-    jokes = new_jokes
+
+    try:
+        new_jokes = _fetch_jokes(config.max_jokes)
+        jokes = new_jokes
+    except ValueError as e:
+        # I failed in re-raising the exception so that the routing function
+        # can catch it and return an error message to the user
+        raise
 
 
 def flush_jokes():
@@ -32,15 +39,22 @@ def _fetch_jokes(num):
         if res.status_code != 200:
             continue
 
-        data = res.json()
-        if data['type'] != 'success':
-            continue
+        try:
+            data = res.json()
+            if data['type'] != 'success':
+                continue
 
-        joke = data['value']
-        joke_id = joke['id']
-        if joke_id in [x['id'] for x in jokes]:
-            continue
+            joke = data['value']
+            joke_id = joke['id']
+            if joke_id in [x['id'] for x in jokes]:
+                continue
 
-        new_jokes.append(joke)
+            new_jokes.append(joke)
+
+        except JSONDecodeError:
+            raise ValueError('API did not return json data.')
+
+    if len(new_jokes) < num:
+        raise ValueError('Failed to fetch new jokes.')
 
     return new_jokes

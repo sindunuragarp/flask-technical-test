@@ -15,10 +15,9 @@ def hello_world():
     return 'It Works!'
 
 
-@app.route('/getJokes')
+@app.route('/getJokes', methods=['GET'])
 def jokes_get():
     data = get_jokes()
-
     res = {
         'status': 'success',
         'jokes': data
@@ -26,11 +25,20 @@ def jokes_get():
     return Response(json.dumps(res), status=200, mimetype='application/json')
 
 
-@app.route('/getNewJokes')
+@app.route('/getNewJokes', methods=['GET'])
 def jokes_get_new():
-    fill_new_jokes()
-    data = get_jokes()
 
+    try:
+        fill_new_jokes()
+    except ValueError as e:
+        print("test")
+        res = {
+            'status': 'error',
+            'message': 'Server Error'
+        }
+        return Response(json.dumps(res), status=400, mimetype='application/json')
+
+    data = get_jokes()
     res = {
         'status': 'success',
         'jokes': data
@@ -38,7 +46,7 @@ def jokes_get_new():
     return Response(json.dumps(res), status=200, mimetype='application/json')
 
 
-@app.route('/flushJokes')
+@app.route('/flushJokes', methods=['GET', 'DELETE'])
 def jokes_flush():
     flush_jokes()
 
